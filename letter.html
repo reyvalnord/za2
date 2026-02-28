@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kartu Ucapan Spesial</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Caveat:wght@400;500;600&family=Nunito:wght@600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Latar belakang halaman mirip screenshot */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ee9ca7; /* Warna hijau mint */
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+/* Halaman awal (amplop) */
+#page-0{
+  height: 320px;   /* ubah sesuai mau kamu */
+}
+
+/* Halaman cover/card (gambar balon besar) */
+#page-1{
+  height: 430px;   /* lebih pendek dari page-0 */
+}
+
+/* Biar isi mengikuti tinggi halaman */
+#page-0 .card-wrapper,
+#page-1 .card-wrapper{
+  height: 100%;
+}
+        /* Container utama kartu */
+        .card-wrapper {
+            position: relative;
+            width: 300px;
+            height: 450px;
+            cursor: pointer;
+            perspective: 1000px;
+        }
+  
+        .card-wrapper1 {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            cursor: pointer;
+            perspective: 1000px;
+        }
+        /* Desain halaman kartu */
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fdfbf5; /* Warna kertas cream terang */
+            border-radius: 4px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* Halaman yang sedang aktif */
+        .page.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        /* Efek klik */
+        .card-wrapper:active {
+            transform: scale(0.98);
+        }
+
+        /* --- HALAMAN 0: AMPLOP --- */
+        #page-0 {
+            background-color: transparent;
+            box-shadow: none;
+            justify-content: flex-end;
+        }
+        .envelope-back {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 250px;
+            background: #e8e8e8;
+            border-radius: 4px;
+        }
+        .card-peek {
+            position: absolute;
+            bottom: 60px;
+            width: 280px;
+            height: 380px;
+            background: #fdfbf5;
+            border-radius: 4px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+.envelope-front{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 240px;        /* bisa 230–260 sesuai selera */
+  overflow: hidden;
+}
+
+/* segitiga utama: ikut lebar 100% (anggap kartu 320px) */
+.envelope-front::before{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:0;
+  height:0;
+
+  /* 320px / 2 = 160px -> pas dengan kartu */
+  border-left: 160px solid #f2f2f2;
+  border-right:160px solid #f2f2f2;
+
+  /* tinggi segitiga bawah (ujung V) */
+  border-bottom:100px solid #f9f9f9;
+
+  /* tinggi ruang transparan atas */
+  border-top: 90px solid transparent;
+}
+
+/* lipatan putih: dibuat pas 100% lebar, rata tengah */
+.envelope-front::after{
+  content:"";
+  position:absolute;
+  bottom: 0;            /* jangan negatif biar gak kepotong */
+  left: 0;
+  width: 0%;          /* IKUT container */
+  height: 160px;
+  background:#fff;
+  transform: rotate(-0deg);  /* lebih halus */
+  transform-origin: center top;
+  border-top:1px solid #eee;
+  box-shadow: 0 -3px 10px rgba(0,0,0,0.05);
+  clip-path: polygon(0 55%, 50% 10%, 100% 55%, 100% 100%, 0 100%);
+}
+
+        /* --- HALAMAN 1: COVER BALON --- */
+        .cover-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #e6f5f4 0%, #fdfbf5 70%);
+            z-index: 0;
+        }
+        .cover-content {
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 30px;
+        }
+        .cover-title {
+            font-family: 'Alex Brush', cursive;
+            font-size: 42px;
+            color: #333;
+            margin-top: 15px;
+        }
+
+        /* --- HALAMAN 2: ISI TEKS PANJANG --- */
+        .message-content {
+            padding: 50px 35px;
+            text-align: center;
+        }
+        .message-text {
+            font-family: 'Caveat', cursive;
+            font-size: 21px;
+            color: #4a4d4b;
+            line-height: 1.3;
+            margin-bottom: 40px;
+        }
+        .message-sign {
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            color: #4a4d4b;
+        }
+
+        /* --- HALAMAN 3: KUE & I LOVE U --- */
+        .cake-container {
+            margin-top: 70px;
+        }
+        .cake-title {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: #d16b43;
+            text-align: center;
+            line-height: 1.1;
+            margin-top: 5px;
+        }
+        .love-text {
+            font-family: 'Caveat', cursive;
+            font-size: 28px;
+            color: #333;
+            margin-top: 50px;
+        }
+        .watermark {
+            position: absolute;
+            bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            opacity: 0.4;
+        }
+        .watermark-text {
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            letter-spacing: -0.5px;
+        }
+        .watermark-text span {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Instruksi di Bawah Kartu */
+        .instruction {
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            color: #2c5040;
+        }
+        .instruction strong {
+            color: #1a362a;
+        }
+.birthday-text{
+  position: absolute;
+  top: 250px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;            /* diperkecil */
+  font-weight: 380;
+  font-family: 'Pacifico', cursive;  /* tema birthday */
+  color: #222;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+  /* Hilangkan efek biru saat tap/click di mobile */
+*{
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Hilangkan highlight/select biru */
+.card-wrapper, .card, .envelope-front, .envelope-back, .page{
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Kalau muncul outline biru saat fokus */
+.card-wrapper:focus,
+.card:focus,
+.page:focus{
+  outline: none;
+}
+
+/* Kalau ada efek biru dari :active */
+.card-wrapper:active,
+.card:active,
+.page:active{
+  background: transparent !important;
+}
+    </style>
+</head>
+<body>
+
+    <svg style="display: none;">
+        <defs>
+            <g id="cute-balloon">
+                <ellipse cx="0" cy="0" rx="22" ry="26" />
+                <polygon points="-5,25 5,25 0,31" />
+                <circle cx="-7" cy="-2" r="2" fill="#333"/>
+                <circle cx="7" cy="-2" r="2" fill="#333"/>
+                <path d="M -5,5 Q 0,10 5,5" stroke="#333" fill="none" stroke-width="2" stroke-linecap="round"/>
+            </g>
+            <g id="hand-icon">
+                <path d="M10,15 L10,6 C10,4.5 12,4.5 12,6 L12,14 L14,12 C15,11 16.5,12 16,13.5 L13,19 C12,21 9.5,22 8,22 C5,22 4,20 4,18 L4,11 C4,9.5 6,9.5 6,11 L6,15 Z" fill="none" stroke="#2c5040" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M15,8 A7,7 0 0,1 21,14" fill="none" stroke="#2c5040" stroke-width="2" stroke-linecap="round" stroke-dasharray="2,2"/>
+            </g>
+        </defs>
+    </svg>
+
+    <div class="card-wrapper" onclick="nextPage()">
+        
+        <div class="page active" id="page-0">
+            <div class="envelope-back"></div>
+            <div class="card-peek">
+                <svg width="150" height="240" viewBox="0 0 150 160">
+                    <use href="#cute-balloon" x="45" y="150" style="color:#eb6b56; fill:currentColor" transform="scale(0.8) translate(10, 20)"/>
+                    <use href="#cute-balloon" x="90" y="170" style="color:#fcd462; fill:currentColor" transform="scale(0.8) translate(30, 0)"/>
+                    <use href="#cute-balloon" x="100" y="175" style="color:#88c99e; fill:currentColor" transform="scale(0.8) translate(-10, 10)"/>
+                </svg>
+<div class="birthday-text">Spesial Letter From Mas</div>
+            </div>
+            <div class="envelope-front"></div>
+        </div>
+
+        <div class="page" id="page-1">
+            <div class="cover-bg"></div>
+            <div class="cover-content">
+                <svg width="220" height="280" viewBox="0 0 200 280">
+                    <path d="M 50,80 L 100,240 M 80,60 L 100,240 M 110,50 L 100,240 M 150,70 L 100,240 M 40,130 L 100,240 M 160,120 L 100,240 M 70,160 L 100,240 M 130,150 L 100,240" stroke="#ccc" stroke-width="1.5"/>
+                    
+                    <use href="#cute-balloon" x="40" y="90" style="color:#f7a8b0; fill:currentColor"/>
+                    <use href="#cute-balloon" x="150" y="85" style="color:#88c99e; fill:currentColor"/>
+                    <use href="#cute-balloon" x="80" y="70" style="color:#fcd462; fill:currentColor"/>
+                    <use href="#cute-balloon" x="120" y="110" style="color:#eb6b56; fill:currentColor"/>
+                    <use href="#cute-balloon" x="60" y="130" style="color:#f29b5c; fill:currentColor"/>
+                    <use href="#cute-balloon" x="160" y="140" style="color:#fcd462; fill:currentColor"/>
+                    <use href="#cute-balloon" x="45" y="160" style="color:#a2d2d5; fill:currentColor"/>
+                    <use href="#cute-balloon" x="140" y="180" style="color:#a2d2d5; fill:currentColor"/>
+                    <use href="#cute-balloon" x="90" y="170" style="color:#f7a8b0; fill:currentColor"/>
+                    <use href="#cute-balloon" x="110" y="60" style="color:#a2d2d5; fill:currentColor"/>
+                    
+                    <path d="M 85,245 C 75,235 70,255 85,250 C 95,245 105,245 115,250 C 130,255 125,235 115,245 C 105,255 95,255 85,245 Z" fill="#eb6b56"/>
+                    <circle cx="100" cy="247" r="4" fill="#d15643"/>
+                </svg>
+                <div class="cover-title">Happy Birthday</div>
+            </div>
+        </div>
+
+        <div class="page" id="page-2">
+            <div class="message-content">
+  <div class="message-text"><br>
+  Selamat ulang tahun, sayang. Maaf<br>
+  Mas telat ngucapin. Semoga di umur<br>
+  baru ini, hatimu selalu tenang dan<br>
+  langkahmu dimudahkan. Kalau dunia<br>
+  lagi capek, pulanglah ke Mas ya?<br>
+      Mas selalu ada buat kamu. ❤️<br>
+  Maaf kalo Mas belum bisa jadi<br>
+  Pacar yang kamu harapkan.<br><br>I Love U sayang<br>
+</div>
+                <div class="message-sign">
+                    Happy birthday❤️
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-3">
+            <div class="cake-container">
+                <svg width="80" height="90" viewBox="0 0 100 110">
+                    <path d="M50,15 Q54,23 50,30 Q46,23 50,15" fill="#f4a261"/>
+                    <rect x="47" y="30" width="6" height="15" fill="#75c9d3" rx="1"/>
+                    <path d="M 20,60 Q 50,45 80,60 L 80,90 Q 50,105 20,90 Z" fill="#fcd462"/>
+                    <path d="M 20,60 Q 50,45 80,60 L 80,70 Q 75,80 70,70 Q 60,85 50,70 Q 40,85 30,70 Q 25,75 20,70 Z" fill="#6d4c41"/>
+                    <circle cx="42" cy="78" r="2.5" fill="#333"/>
+                    <circle cx="58" cy="78" r="2.5" fill="#333"/>
+                    <path d="M 46,82 Q 50,86 54,82" stroke="#333" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+                    <rect x="30" y="55" width="4" height="2" fill="#eb6b56" transform="rotate(20 30 55)"/>
+                    <rect x="65" y="53" width="4" height="2" fill="#88c99e" transform="rotate(-30 65 53)"/>
+                    <rect x="40" y="50" width="4" height="2" fill="#f7a8b0" transform="rotate(45 40 50)"/>
+                    <rect x="55" y="48" width="4" height="2" fill="#a2d2d5" transform="rotate(-15 55 48)"/>
+                </svg>
+                <div class="cake-title">Happy<br>Birthday!</div>
+            </div>
+
+            <div class="love-text">I love u Sayang.</div>
+
+            <div class="watermark">
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="11" fill="none" stroke="#555" stroke-width="1.5"/>
+                    <path d="M12,22 L12,10 M9,14 Q12,10 16,12 M8,10 Q12,7 15,9" fill="none" stroke="#555" stroke-width="1.5"/>
+                </svg>
+                <div class="watermark-text">Made <span>Mas</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="instruction">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+            <use href="#hand-icon"/>
+        </svg>
+        <span><strong>Swipe</strong> or <strong>click</strong> to look inside</span>
+    </div>
+
+<script>
+  function nextPage() {
+    const page3 = document.getElementById("page-3");
+    // Kalau sudah di halaman terakhir, klik langsung ke hadiah.html
+    if (page3.classList.contains("active")) {
+      window.location.href = "https://link.dana.id/danakaget?c=suwcpx7f2&r=iehbAQ&orderId=20260228101214837915010300166941365872413"; // kalau kamu memang file-nya hadiah.htmk, ganti di sini
+      return;
+    }
+
+    // Cari halaman yang sedang aktif
+    const current = document.querySelector(".page.active");
+    if (!current) return;
+
+    // Ambil nomor halaman dari id "page-x"
+    const curIndex = parseInt(current.id.split("-")[1], 10);
+    const nextIndex = curIndex + 1;
+
+    // Pindah ke halaman berikutnya
+    current.classList.remove("active");
+    const next = document.getElementById("page-" + nextIndex);
+    if (next) next.classList.add("active");
+  }
+  // Musik mulai saat interaksi pertama (klik pertama membuka surat)
+  (function () {
+    const audio = new Audio("hbd.mp3");   // pastikan file hbd.mp3 satu folder dengan html ini
+    audio.loop = true;
+    audio.preload = "auto";
+
+    async function startMusic() {
+      try { await audio.play(); } catch (e) {}
+    }
+
+    // Jalankan saat klik pertama di kartu / layar
+    window.addEventListener("pointerdown", startMusic, { once: true });
+    window.addEventListener("touchstart", startMusic, { once: true });
+    window.addEventListener("click", startMusic, { once: true });
+  })();
+</script>
+
+</body>
+</html>
